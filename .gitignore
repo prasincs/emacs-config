@@ -24,3 +24,8 @@ tramp
 tmp/*
 .smex-items
 swank/*
+.emacs.desktop*
+ido.last
+smex-*
+el-get/
+elpa/

@@ -224,5 +224,73 @@
 (when (file-exists-p custom-file)
   (load custom-file))
 
+;; Place the function call requiring `clojure-mode` after the call to `package-initialize`
+;; if you are using Emacs version 24.1.1
+(require 'clojure-mode)
+
+(define-clojure-indent
+  (defroutes 'defun)
+  (GET 2)
+  (POST 2)
+  (PUT 2)
+  (DELETE 2)
+  (HEAD 2)
+  (ANY 2)
+  (context 2))
+
+(setq-default fill-column 80)
+
+
+
+
+
+(defun swap-buffer ()
+  (interactive)
+  (cond ((one-window-p) (display-buffer (other-buffer)))
+        ((let* ((buffer-a (current-buffer))
+                (window-b (cadr (window-list)))
+                (buffer-b (window-buffer window-b)))
+           (set-window-buffer window-b buffer-a)
+           (switch-to-buffer buffer-b)
+           (other-window 1)))))
+
+(global-set-key (kbd "C-c s") 'swap-buffer)
+
+
+(setq cider-repl-wrap-history t)
+(setq cider-repl-history-size 1000)
+(setq cider-repl-history-file "~/.cider-history")
+
+
+
+
+ (desktop-save-mode 1)
+
+
+
+(add-to-list 'load-path "~/.emacs.d/el-get/el-get")
+
+(unless (require 'el-get nil 'noerror)
+  (with-current-buffer
+      (url-retrieve-synchronously
+       "https://raw.githubusercontent.com/dimitri/el-get/master/el-get-install.el")
+    (goto-char (point-max))
+    (eval-print-last-sexp)))
+
+(add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-user/recipes")
+
+(setq my-packages
+      '(el-get evil evil-surround goto-chg helm helm-swoop undo-tree))
+
+(el-get 'sync my-packages)
+
+
+
+(require 'evil)
+(require 'evil-surround)
+(require 'helm-swoop)
+(evil-mode 1)
+(global-evil-surround-mode 1)
+
 (message "\n\n Pack loading completed. Your Emacs is Live...\n\n")
 (put 'downcase-region 'disabled nil)
