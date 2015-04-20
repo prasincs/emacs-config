@@ -278,12 +278,15 @@
     (eval-print-last-sexp)))
 
 (add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-user/recipes")
-
+;;; (add-to-list 'custom-theme-load-path "~/.emacs.d/el-get/zenburn")
 (setq my-packages
-      '(el-get evil evil-surround goto-chg helm helm-swoop undo-tree))
+      '(el-get evil evil-surround goto-chg helm helm-swoop undo-tree zenburn))
 
 (el-get 'sync my-packages)
 
+
+(if (file-exists-p "~/.emacs.d/custom")
+    (load "~/.emacs.d/custom/init.el"))
 
 
 (require 'evil)
