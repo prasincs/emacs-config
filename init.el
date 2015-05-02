@@ -261,9 +261,6 @@
 (setq cider-repl-history-size 1000)
 (setq cider-repl-history-file "~/.cider-history")
 
-
-
-
  (desktop-save-mode 1)
 
 
@@ -294,6 +291,14 @@
 (require 'helm-swoop)
 (evil-mode 1)
 (global-evil-surround-mode 1)
+
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.org/packages/") t)
+(when (< emacs-major-version 24)
+  ;; For important compatibility libraries like cl-lib
+  (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
+(package-initialize) ;; You might already have this line
 
 (message "\n\n Pack loading completed. Your Emacs is Live...\n\n")
 (put 'downcase-region 'disabled nil)
