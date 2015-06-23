@@ -242,7 +242,9 @@
 
 
 
-
+;;(require 'server)
+;; (unless (server-running-p)
+;;  (server-start))
 
 (defun swap-buffer ()
   (interactive)
@@ -261,7 +263,7 @@
 (setq cider-repl-history-size 1000)
 (setq cider-repl-history-file "~/.cider-history")
 
- (desktop-save-mode 1)
+;; (desktop-save-mode 1)
 
 
 
@@ -295,6 +297,13 @@
 (require 'package)
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.org/packages/") t)
+
+(defun disable-local-evil-mode-neotree-hook ()
+  (when evil-mode
+    (evil-local-mode 0)))
+
+(add-hook 'neo-enter-hook 'disable-local-evil-mode-neotree-hook)
+
 (when (< emacs-major-version 24)
   ;; For important compatibility libraries like cl-lib
   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
@@ -302,3 +311,12 @@
 
 (message "\n\n Pack loading completed. Your Emacs is Live...\n\n")
 (put 'downcase-region 'disabled nil)
+(setq cider-interactive-eval-result-prefix ";; => ")
+(setq cider-auto-select-error-buffer nil)
+(setq nrepl-buffer-name-show-port t)
+
+
+(setq cider-known-endpoints '(("hatter" "localhost"  "9001")
+                              ("cheshire" "localhost" "9002")
+                              ("sevak" "localhost" "9003")
+                              ("sarlacc" "localhost" "9004")))
