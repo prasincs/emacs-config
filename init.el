@@ -314,9 +314,15 @@
 (setq cider-interactive-eval-result-prefix ";; => ")
 (setq cider-auto-select-error-buffer nil)
 (setq nrepl-buffer-name-show-port t)
+; Log communication with the nREPL server (extremely useful for debugging CIDER problems)
+(setq nrepl-log-messages t)
 
+(setq cider-auto-select-error-buffer nil)
 
-(setq cider-known-endpoints '(("hatter" "localhost"  "9001")
-                              ("cheshire" "localhost" "9002")
-                              ("sevak" "localhost" "9003")
-                              ("sarlacc" "localhost" "9004")))
+(add-hook 'cider-mode-hook #'eldoc-mode)
+
+;; use Shift+arrow_keys to move cursor around split panes
+(windmove-default-keybindings)
+
+;; when cursor is on edge, move to the other side, as in a toroidal space
+(setq windmove-wrap-around t )
