@@ -236,7 +236,8 @@
   (DELETE 2)
   (HEAD 2)
   (ANY 2)
-  (context 2))
+  (context 2)
+  (defn 2))
 
 (setq-default fill-column 80)
 
@@ -277,9 +278,8 @@
     (eval-print-last-sexp)))
 
 (add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-user/recipes")
-;;; (add-to-list 'custom-theme-load-path "~/.emacs.d/el-get/zenburn")
 (setq my-packages
-      '(el-get evil evil-surround goto-chg helm helm-swoop undo-tree zenburn))
+      '(el-get evil evil-surround goto-chg helm helm-swoop undo-tree))
 
 (el-get 'sync my-packages)
 
@@ -326,3 +326,13 @@
 
 ;; when cursor is on edge, move to the other side, as in a toroidal space
 (setq windmove-wrap-around t )
+
+;; scroll one line at a time (less "jumpy" than defaults)
+
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
+
+(setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
+
+(setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+
+(setq scroll-step 1) ;; keyboard scroll one line at a time
