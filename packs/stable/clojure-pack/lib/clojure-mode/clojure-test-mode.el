@@ -196,7 +196,6 @@
                                    join-fixtures *report-counters* do-report
                                    test-var *initial-report-counters*]]
               [clojure.pprint :only [pprint]]))
-
     (def #^{:dynamic true} *clojure-test-mode-out* nil)
     (def fail-events #{:fail :error})
     (defn report [event]
@@ -223,7 +222,6 @@
                                               (:line event)))])))
      (binding [*test-out* (or *clojure-test-mode-out* *out*)]
        ((.getRawRoot #'clojure.test/report) event)))
-
    (defn clojure-test-mode-test-one-var [test-ns test-name]
      (let [v (ns-resolve test-ns test-name)
            once-fixture-fn (join-fixtures (::once-fixtures (meta (find-ns test-ns))))
@@ -232,7 +230,6 @@
         (fn []
           (when (:test (meta v))
             (each-fixture-fn (fn [] (test-var v))))))))
-
     ;; adapted from test-ns
     (defn clojure-test-mode-test-one-in-ns [ns test-name]
       (binding [*report-counters* (ref *initial-report-counters*)]
@@ -510,7 +507,6 @@ Clojure src file for the given test namespace.")
 ;; Test navigation:
 (defun clojure-in-tests-p ()
   "Check whether the current file is a test file.
-
 Two checks are made - whether the namespace of the file has the
 word test in it and whether the file lives under the test/ directory."
   (or (string-match-p "test\." (clojure-find-ns))
@@ -565,7 +561,6 @@ word test in it and whether the file lives under the test/ directory."
 ;;;###autoload
 (define-minor-mode clojure-test-mode
   "A minor mode for running Clojure tests.
-
 \\{clojure-test-mode-map}"
   nil " Test" clojure-test-mode-map
   (when (cider-connected-p)

@@ -8,40 +8,20 @@
 Provides Emacs font-lock, indentation, and navigation for the
 [Clojure programming language](http://clojure.org).
 
-A more thorough walkthrough is available at [clojure-doc.org](http://clojure-doc.org/articles/tutorials/emacs.html).
+More thorough walkthroughs are available at
+[clojure-doc.org](http://clojure-doc.org/articles/tutorials/emacs.html)
+and [Clojure for the Brave and the True](http://www.braveclojure.com/basic-emacs/).
 
 ## Installation
 
-Available on both [MELPA Stable][] and
-[MELPA][] repos.
+Available on all major `package.el` community maintained repos -  [MELPA Stable][],
+[MELPA][] and [Marmalade][] repos.
 
-MELPA Stable is recommended as it has the latest stable version, but
+MELPA Stable and Marmalade are recommended as they have the latest stable version.
 MELPA has a development snapshot for users who don't mind breakage but
 don't want to run from a git checkout.
 
-If you're not already using MELPA Stable, add this to your
-`~/.emacs.d/init.el` and load it with <kbd>M-x eval-buffer</kbd>.
-
-```el
-(require 'package)
-(add-to-list 'package-archives
-             '("melpa-stable" . "http://stable.melpa.org/packages/"))
-(package-initialize)
-```
-
-If you're feeling adventurous and you'd like to use MELPA add this bit
-of code instead:
-
-```el
-(require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.org/packages/") t)
-(package-initialize)
-```
-
-And then you can install:
-
-<kbd>M-x package-refresh-contents</kbd>
+You can install `clojure-mode` using the following command:
 
 <kbd>M-x package-install [RET] clojure-mode [RET]</kbd>
 
@@ -49,9 +29,12 @@ or if you'd rather keep it in your dotfiles:
 
 ```el
 (unless (package-installed-p 'clojure-mode)
-  (package-refresh-contents)
-  (package-install 'clojure-mode))
+  (package-refresh-contents))
 ```
+
+If the installation doesn't work try refreshing the package list:
+
+<kbd>M-x package-refresh-contents</kbd>
 
 ### Extra font-locking
 
@@ -66,15 +49,18 @@ To see a list of available configuration options do `M-x customize-group RET clo
 
 ### Indentation options
 
-Characterizing the default indentation rules of clojure-mode is difficult to do
-in summary; this is one attempt:
+The default indentation rules in `clojure-mode` are derived from the
+[community Clojure Style Guide](https://github.com/bbatsov/clojure-style-guide).
+
+Characterizing them is difficult to do in summary; this is one
+attempt:
 
 1. Bodies of parenthesized forms are indented such that arguments are aligned to
   the start column of the first argument, _except_ for a class of forms
   identified by the symbol in function position, the bodies of which are
   indented two spaces, regardless of the position of their first argument (this
   is called "defun" indentation, for historical reasons):
-  1. Known special forms (e.g. `case`, `try`, etc)
+  1. Known special forms (e.g. `loop`, `try`, etc)
   2. Nearly all "core" macros that ship as part of Clojure itself
   3. Userland macros (and any other form?) that are locally registered via
   `put-clojure-indent`, `define-clojure-indent` (helpers for adding mappings to
@@ -155,43 +141,12 @@ and evaluating code interactively.
 
 ### Basic REPL
 
-Use <kbd>M-x run-lisp</kbd> to open a simple REPL subprocess using
-[Leiningen][]. Once that has
-opened, you can use <kbd>C-c C-r</kbd> to evaluate the region or
-<kbd>C-c C-l</kbd> to load the whole file.
-
-If you don't use Leiningen, you can set `inferior-lisp-program` to
-a different REPL command.
+Install [inf-clojure][] for basic interaction with a REPL process.
 
 ### CIDER
 
 You can also use [Leiningen][] to start an
 enhanced REPL via [CIDER][].
-
-### Swank Clojure
-
-SLIME is available via
-[swank-clojure][] in `clojure-mode` 1.x.
-SLIME support was removed in version 2.x in favor of `CIDER`.
-
-## Clojure Test Mode
-
-**Deprecated**
-
-This source repository also includes `clojure-test-mode.el`, which
-provides support for running Clojure tests (using the `clojure.test`
-framework) via CIDER and seeing feedback in the test buffer about
-which tests failed or errored. The installation instructions above
-should work for clojure-test-mode as well.
-
-Once you have a repl session active, you can run the tests in the
-current buffer with <kbd>C-c C-,</kbd>. Failing tests and errors will be
-highlighted using overlays. To clear the overlays, use <kbd>C-c k</kbd>.
-
-The mode is **deprecated** (more details
-[here](https://github.com/clojure-emacs/clojure-mode/issues/214)) and
-will not be improved/maintained anymore. All `clojure-test-mode` users
-should start using CIDER 0.7+, which features built-in support for `clojure.test`.
 
 ## Changelog
 
@@ -209,11 +164,12 @@ Distributed under the GNU General Public License; type <kbd>C-h C-c</kbd> to vie
 [melpa-stable-badge]: http://stable.melpa.org/packages/clojure-mode-badge.svg
 [melpa-package]: http://melpa.org/#/clojure-mode
 [melpa-stable-package]: http://stable.melpa.org/#/clojure-mode
+[marmalade]: https://marmalade-repo.org
 [COPYING]: http://www.gnu.org/copyleft/gpl.html
 [badge-travis]: https://travis-ci.org/clojure-emacs/clojure-mode.svg?branch=master
 [travis]: https://travis-ci.org/clojure-emacs/clojure-mode
-[swank-clojure]: http://github.com/technomancy/swank-clojure
 [CIDER]: https://github.com/clojure-emacs/cider
+[inf-clojure]: https://github.com/clojure-emacs/inf-clojure
 [Leiningen]: http://leiningen.org
 [contributors]: https://github.com/clojure-emacs/clojure-mode/contributors
 [melpa]: http://melpa.org
@@ -222,4 +178,4 @@ Distributed under the GNU General Public License; type <kbd>C-h C-c</kbd> to vie
 [clj-refactor]: https://github.com/clojure-emacs/clj-refactor.el
 [paredit]: http://mumble.net/~campbell/emacs/paredit.html
 [smartparens]: https://github.com/Fuco1/smartparens
-[RainbowDelimiters]: https://github.com/jlr/rainbow-delimiters
+[RainbowDelimiters]: https://github.com/Fanael/rainbow-delimiters

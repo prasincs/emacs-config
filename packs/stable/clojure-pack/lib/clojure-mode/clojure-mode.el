@@ -9,7 +9,7 @@
 ;;       Bozhidar Batsov <bozhidar@batsov.com>
 ;; URL: http://github.com/clojure-emacs/clojure-mode
 ;; Keywords: languages clojure clojurescript lisp
-;; Version: 3.0.1
+;; Version: 4.0.1
 ;; Package-Requires: ((emacs "24.1"))
 
 ;; This file is not part of GNU Emacs.
@@ -28,6 +28,9 @@
 
 ;;   ;; require or autoload smartparens
 ;;   (add-hook 'clojure-mode-hook 'smartparens-strict-mode)
+
+;; See inf-clojure (http://github.com/clojure-emacs/inf-clojure) for
+;; basic interaction with Clojure subprocesses.
 
 ;; See CIDER (http://github.com/clojure-emacs/cider) for
 ;; better interaction with subprocesses via nREPL.
@@ -69,7 +72,6 @@
   (defvar paredit-mode))
 
 (require 'cl)
-(require 'inf-lisp)
 (require 'imenu)
 
 (declare-function lisp-fill-paragraph  "lisp-mode" (&optional justify))
@@ -80,6 +82,9 @@
   :group 'languages
   :link '(url-link :tag "Github" "https://github.com/clojure-emacs/clojure-mode")
   :link '(emacs-commentary-link :tag "Commentary" "clojure-mode"))
+
+(defconst clojure-mode-version "4.0.1"
+  "The current version of `clojure-mode'.")
 
 (defface clojure-keyword-face
   '((t (:inherit font-lock-constant-face)))
@@ -98,21 +103,6 @@
   "Face used to font-lock interop method names (camelCase)."
   :group 'clojure
   :package-version '(clojure-mode . "3.0.0"))
-
-(defcustom clojure-load-command  "(clojure.core/load-file \"%s\")\n"
-  "Format-string for building a Clojure expression to load a file.
-This format string should use `%s' to substitute a file name and
-should result in a Clojure expression that will command the
-inferior Clojure to load that file."
-  :type 'string
-  :group 'clojure
-  :safe 'stringp)
-
-(defcustom clojure-inf-lisp-command "lein repl"
-  "The command used by `inferior-lisp-program'."
-  :type 'string
-  :group 'clojure
-  :safe 'stringp)
 
 (defcustom clojure-defun-style-default-indent nil
   "When non-nil, use default indenting for functions and macros.
@@ -162,24 +152,9 @@ For example, \[ is allowed in :db/id[:db.part/user]."
 
 (defvar clojure-mode-map
   (let ((map (make-sparse-keymap)))
-    (set-keymap-parent map lisp-mode-shared-map)
-    (define-key map (kbd "C-M-x")   'lisp-eval-defun)
-    (define-key map (kbd "C-x C-e") 'lisp-eval-last-sexp)
-    (define-key map (kbd "C-c C-e") 'lisp-eval-last-sexp)
-    (define-key map (kbd "C-c C-l") 'clojure-load-file)
-    (define-key map (kbd "C-c C-r") 'lisp-eval-region)
-    (define-key map (kbd "C-c C-z") 'clojure-display-inferior-lisp-buffer)
     (define-key map (kbd "C-:") 'clojure-toggle-keyword-string)
     (easy-menu-define clojure-mode-menu map "Clojure Mode Menu"
       '("Clojure"
-        ["Eval Top-Level Expression" lisp-eval-defun]
-        ["Eval Last Expression" lisp-eval-last-sexp]
-        ["Eval Region" lisp-eval-region]
-        "--"
-        ["Run Inferior Lisp" clojure-display-inferior-lisp-buffer]
-        ["Display Inferior Lisp Buffer" clojure-display-inferior-lisp-buffer]
-        ["Load File" clojure-load-file]
-        "--"
         ["Toggle between string & keyword" clojure-toggle-keyword-string]
         ["Mark string" clojure-mark-string]
         ["Insert ns form at point" clojure-insert-ns-form-at-point]
@@ -202,14 +177,6 @@ For example, \[ is allowed in :db/id[:db.part/user]."
     ;; Make hash a usual word character
     (modify-syntax-entry ?# "_ p" table)
     table))
-
-(defvar clojure-prev-l/c-dir/file nil
-  "Record last directory and file used in loading or compiling.
-This holds a cons cell of the form `(DIRECTORY . FILE)'
-describing the last `clojure-load-file' or `clojure-compile-file' command.")
-
-(defconst clojure-mode-version "3.1.0-snapshot"
-  "The current version of `clojure-mode'.")
 
 (defconst clojure--prettify-symbols-alist
   '(("fn"  . ?λ)))
@@ -273,11 +240,8 @@ ENDP and DELIMITER."
     (add-to-list 'paredit-space-for-delimiter-predicates
                  'clojure-no-space-after-tag)))
 
-;;;###autoload
-(define-derived-mode clojure-mode prog-mode "Clojure"
-  "Major mode for editing Clojure code.
-
-\\{clojure-mode-map}"
+(defun clojure-mode-variables ()
+  "Set up initial buffer-local variables for Clojure mode."
   (setq-local imenu-create-index-function
               (lambda ()
                 (imenu--generic-function '((nil clojure-match-next-def 0)))))
@@ -291,11 +255,17 @@ ENDP and DELIMITER."
   (setq-local indent-line-function 'clojure-indent-line)
   (setq-local lisp-indent-function 'clojure-indent-function)
   (setq-local lisp-doc-string-elt-property 'clojure-doc-string-elt)
-  (setq-local inferior-lisp-program clojure-inf-lisp-command)
   (setq-local parse-sexp-ignore-comments t)
   (setq-local prettify-symbols-alist clojure--prettify-symbols-alist)
+  (setq-local open-paren-in-column-0-is-defun-start nil))
+
+;;;###autoload
+(define-derived-mode clojure-mode prog-mode "Clojure"
+  "Major mode for editing Clojure code.
+
+\\{clojure-mode-map}"
+  (clojure-mode-variables)
   (clojure-font-lock-setup)
-  (setq-local open-paren-in-column-0-is-defun-start nil)
   (add-hook 'paredit-mode-hook 'clojure-paredit-setup))
 
 (defsubst clojure-in-docstring-p ()
@@ -347,25 +317,6 @@ If JUSTIFY is non-nil, justify as well as fill the paragraph."
                            fill-column))
             (fill-prefix (clojure-adaptive-fill-function)))
         (do-auto-fill)))))
-
-(defun clojure-display-inferior-lisp-buffer ()
-  "Display a buffer bound to `inferior-lisp-buffer'."
-  (interactive)
-  (if (and inferior-lisp-buffer (get-buffer inferior-lisp-buffer))
-      (pop-to-buffer inferior-lisp-buffer t)
-    (run-lisp inferior-lisp-program)))
-
-(defun clojure-load-file (file-name)
-  "Load a Clojure file FILE-NAME into the inferior Clojure process."
-  (interactive (comint-get-source "Load Clojure file: "
-                                  clojure-prev-l/c-dir/file
-                                  '(clojure-mode) t))
-  (comint-check-source file-name) ; Check to see if buffer needs saved.
-  (setq clojure-prev-l/c-dir/file (cons (file-name-directory file-name)
-                                        (file-name-nondirectory file-name)))
-  (comint-send-string (inferior-lisp-proc)
-                      (format clojure-load-command file-name))
-  (switch-to-lisp t))
 
 
 
@@ -457,7 +408,7 @@ Called by `imenu--generic-function'."
           '("letfn" "case" "cond" "cond->" "cond->>" "condp"
             "for" "when" "when-not" "when-let" "when-first" "when-some"
             "if-let" "if-not" "if-some"
-            ".." "->" "->>" "doto" "and" "or"
+            ".." "->" "->>" "as->" "doto" "and" "or"
             "dosync" "doseq" "dotimes" "dorun" "doall"
             "load" "import" "unimport" "ns" "in-ns" "refer"
             "with-open" "with-local-vars" "binding"
@@ -847,7 +798,10 @@ it from Lisp code, use (put-clojure-indent 'some-symbol 'defun)."
   (if 1)
   (if-not 1)
   (case 1)
+  (cond 0)
   (condp 2)
+  (cond-> 1)
+  (cond->> 1)
   (when 1)
   (while 1)
   (when-not 1)
@@ -858,6 +812,7 @@ it from Lisp code, use (put-clojure-indent 'some-symbol 'defun)."
   (doto 1)
   (locking 1)
   (proxy 2)
+  (as-> 2)
   (with-open 1)
   (with-precision 1)
   (with-local-vars 1)
@@ -886,11 +841,6 @@ it from Lisp code, use (put-clojure-indent 'some-symbol 'defun)."
   (if-let 1)
   (when-some 1)
   (if-some 1)
-
-  ;; data structures
-  (defstruct 1)
-  (struct-map 1)
-  (assoc 1)
 
   (defmethod 'defun)
 

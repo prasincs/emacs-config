@@ -2,6 +2,22 @@
 
 ## master (unreleased)
 
+### 4.0.1 (19/12/2014)
+
+### Bugs fixed
+
+* Indent properly `as->`.
+* Revert the indentation settings for `->`, `->>`, `some->` and `some->>`.
+
+## 4.0.0 (12/12/2014)
+
+### Changes
+
+* Removed `inferior-lisp` integration in favor of `inf-clojure`.
+* Indented the body of `cond` with 2 spaces.
+* Removed special indentation settings for `defstruct`, `struct-map` and `assoc`.
+* Added special indentation settings for `->`, `->>`, `cond->`, `cond->>`, `some->` and `some->>`.
+
 ## 3.0.1 (24/11/2014)
 
 ### Bugs fixed
