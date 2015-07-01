@@ -279,7 +279,7 @@
 
 (add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-user/recipes")
 (setq my-packages
-      '(el-get evil evil-surround goto-chg helm helm-swoop undo-tree))
+      '(el-get evil evil-surround goto-chg helm helm-swoop undo-tree projectile webjump++))
 
 (el-get 'sync my-packages)
 
@@ -295,6 +295,7 @@
 (global-evil-surround-mode 1)
 
 (require 'package)
+(require 'projectile)
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.org/packages/") t)
 
@@ -336,3 +337,6 @@
 (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
 
 (setq scroll-step 1) ;; keyboard scroll one line at a time
+
+
+(global-set-key [(super j)] 'webjump++)
