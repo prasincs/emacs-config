@@ -344,10 +344,10 @@
 ;; Project management
 (projectile-global-mode)
 
-(define-key projectile-mode-map [?\s-d] 'projectile-find-dir)
-(define-key projectile-mode-map [?\s-p] 'projectile-switch-project)
-(define-key projectile-mode-map [?\s-f] 'projectile-find-file)
-(define-key projectile-mode-map [?\s-g] 'projectile-grep)
+(define-key projectile-mode-map [(super d)] 'projectile-find-dir)
+(define-key projectile-mode-map [(super p)] 'projectile-switch-project)
+(define-key projectile-mode-map [(super f)] 'projectile-find-file)
+(define-key projectile-mode-map [(super g)] 'projectile-grep)
 
 ;; magit
 (global-set-key [(super i)] 'magit-status)
@@ -363,3 +363,8 @@
    "from IPython.core.completerlib import module_completion"
  python-shell-completion-string-code
    "';'.join(get_ipython().Completer.all_completions('''%s'''))\n")
+
+
+;; Work stuff
+(add-to-list 'auto-mode-alist '("\\.clj\.[a-zA-Z0-9.]+\\'" . clojure-mode))
+(add-to-list 'auto-mode-alist '("\\.edn\.[a-zA-Z0-9.]+\\'" . clojure-mode))
