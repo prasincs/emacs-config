@@ -279,7 +279,7 @@
 
 (add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-user/recipes")
 (setq my-packages
-      '(el-get evil evil-surround goto-chg helm helm-swoop undo-tree projectile webjump++))
+      '(el-get evil evil-surround goto-chg helm helm-swoop undo-tree projectile webjump++ company-mode perspective))
 
 (el-get 'sync my-packages)
 
@@ -291,8 +291,10 @@
 (require 'evil)
 (require 'evil-surround)
 (require 'helm-swoop)
+(require 'company)
 (evil-mode 1)
 (global-evil-surround-mode 1)
+(add-hook 'after-init-hook 'global-company-mode)
 
 (require 'package)
 (require 'projectile)
@@ -342,10 +344,15 @@
 (global-set-key [(super j)] 'webjump++)
 
 ;; Project management
+(persp-mode)
+(require 'persp-projectile)
 (projectile-global-mode)
 
+
+(setq projectile-enable-caching t)
 (define-key projectile-mode-map [(super d)] 'projectile-find-dir)
 (define-key projectile-mode-map [(super p)] 'projectile-switch-project)
+(define-key projectile-mode-map [(super m)] 'projectile-persp-switch-project)
 (define-key projectile-mode-map [(super f)] 'projectile-find-file)
 (define-key projectile-mode-map [(super g)] 'projectile-grep)
 
@@ -368,3 +375,30 @@
 ;; Work stuff
 (add-to-list 'auto-mode-alist '("\\.clj\.[a-zA-Z0-9.]+\\'" . clojure-mode))
 (add-to-list 'auto-mode-alist '("\\.edn\.[a-zA-Z0-9.]+\\'" . clojure-mode))
+
+;; Kill all other buffers except the current one
+(defun kill-other-buffers ()
+      "Kill all other buffers."
+      (interactive)
+      (mapc 'kill-buffer (delq (current-buffer) (buffer-list))))
+
+(defun kill-cider-repls ()
+  "Kill all cider repls"
+  (interactive)
+  (kill-matching-buffers ".*cider-repl.*"))
+
+(defun hide-cider-error-window ()
+  "Hides the *cider-error* window"
+  (interactive)
+  (let ((target-window (get-buffer-window "*cider-error*")))
+    (when target-window
+      (delete-window target-window))))
+
+
+(global-set-key (kbd "C-c e") 'hide-cider-error-window)
+
+(setq ac-modes (delete 'cider-mode ac-modes))
+(setq ac-modes (delete 'cider-repl-mode ac-modes))
+
+(add-hook 'cider-repl-mode-hook #'company-mode)
+(add-hook 'cider-mode-hook #'company-mode)
